@@ -44,7 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if(grantResults.length> 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
@@ -62,7 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(MapsActivity.this);
     }
 
 
@@ -79,7 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) MapsActivity.this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -97,17 +97,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     List<Address> listAddresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     if (listAddresses != null && listAddresses.size() > 0) {
 
-                        Log.i("Place Info", listAddresses.get(0).toString());
+                        String address = "";
+                        if (listAddresses.get(0).getSubThoroughfare() != null) {
+
+                             address += listAddresses.get(0).getSubThoroughfare() + "";
+
+                        }
+                        if (listAddresses.get(0).getThoroughfare() != null) {
+
+                            address += listAddresses.get(0).getThoroughfare() + ", ";
+
+                        }
+                        if (listAddresses.get(0).getLocality() != null) {
+
+                            address += listAddresses.get(0).getLocality() + ", ";
+
+                        }
+                        if (listAddresses.get(0).getPostalCode() != null) {
+
+                            address += listAddresses.get(0).getPostalCode() + ", ";
+
+                        }
+                        if (listAddresses.get(0).getCountryName() != null) {
+
+                            address += listAddresses.get(0).getCountryName();
+
+                        }
+                        Toast.makeText(MapsActivity.this, address, Toast.LENGTH_SHORT).show();
 
                     }
 
-                } catch (IOException e) {
+                }
+                catch (Exception e) {
 
                     e.printStackTrace();
-                    Log.i("Failed", "failed");
+                    Toast.makeText(MapsActivity.this, "failed", Toast.LENGTH_SHORT).show();
+
 
                 }
-
             }
 
             @Override
@@ -132,9 +159,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         } else {
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
             } else {
 
